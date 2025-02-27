@@ -115,11 +115,13 @@ const NFTListingForm = () => {
       let tx = await contract.createToken(_price, metadataURL, { value: ListingPrice });
       const receipt = await tx.wait();
 
-
       setMsg(`Upload Successful!`);
       window.alert("Congratulations! Your nft has been uploaded to marketplace!");
       setFormData({ name: '', description: '', price: '' });
       setFileUrl(null);
+
+      // Refetch NFTs
+      fetchNFTs(contract);
 
     } catch (e) {
       setMsg(`Error listing NFT!`);
@@ -128,6 +130,30 @@ const NFTListingForm = () => {
       setState(null);
     }
   }
+
+  const fetchNFTs = async (contract) => {
+    try {
+      const nfts = await contract.getAllNFTs();
+      const processedNFTs = await Promise.all(nfts.map(async (nft) => {
+        const tokenURI = await contract.tokenURI(nft.tokenId);
+        const response = await fetch(tokenURI);
+        const metadata = await response.json();
+        return {
+          id: nft.tokenId.toString(),
+          price: ethers.formatEther(nft.price),
+          seller: nft.seller,
+          owner: nft.owner,
+          image: metadata.image,
+          name: metadata.name,
+          description: metadata.description,
+        };
+      }));
+      // Assuming you have a state to store all NFTs
+      setAllNFTs(processedNFTs);
+    } catch (error) {
+      console.error("Error fetching NFTs:", error);
+    }
+  };
 
   return (
     <div className={styles.formContainer}>

@@ -57,7 +57,7 @@ function NavBar({ onPageChange }) {
     setAccount, setConnected, setBalance, setProvider, setSigner}} >
       <nav className={styles.navbar}>
         <div className={styles.navbarLeft}>
-          <h1>Aashi's NFT Marketplace</h1>
+          <h1>NFT Marketplace</h1>
         </div>
         <div className={styles.navbarCenter}>
           <ul>

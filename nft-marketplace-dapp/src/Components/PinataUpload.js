@@ -1,14 +1,17 @@
-const key = import.meta.env.VITE_PINATA_KEY;
-const secret = import.meta.env.VITE_PINATA_SECRET;
-
-
 import axios from 'axios';
 import FormData from 'form-data';
 
-export const uploadJSONToIPFS = async(JSONBody) => {
+// Including your Pinata API keys directly (only for testing purposes)
+const key = "17aa3efa4b4cbf1e0894";
+const secret = "c246d0d5251edef6039dfbcea36de36788132ea33fa286aeb736d58318fb5eba";
+
+console.log("Pinata API Key:", key);  // Be careful with logging sensitive information.
+console.log("Pinata Secret Key:", secret);
+
+export const uploadJSONToIPFS = async (JSONBody) => {
     const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
-    //making axios POST request to Pinata ⬇️
-    return axios 
+    // Making axios POST request to Pinata
+    return axios
         .post(url, JSONBody, {
             headers: {
                 pinata_api_key: key,
@@ -16,25 +19,24 @@ export const uploadJSONToIPFS = async(JSONBody) => {
             }
         })
         .then(function (response) {
-           return {
-               success: true,
-               pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
-           };
+            return {
+                success: true,
+                pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
+            };
         })
         .catch(function (error) {
-            console.log(error)
+            console.log(error);
             return {
                 success: false,
                 message: error.message,
-            }
-
-    });
+            };
+        });
 };
 
-export const uploadFileToIPFS = async(file) => {
+export const uploadFileToIPFS = async (file) => {
     const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
-    //making axios POST request to Pinata ⬇️
-    
+    // Making axios POST request to Pinata
+
     let data = new FormData();
     data.append('file', file);
 
@@ -46,7 +48,7 @@ export const uploadFileToIPFS = async(file) => {
     });
     data.append('pinataMetadata', metadata);
 
-    //pinataOptions are optional
+    // Optional pinataOptions
     const pinataOptions = JSON.stringify({
         cidVersion: 0,
         customPinPolicy: {
@@ -64,7 +66,7 @@ export const uploadFileToIPFS = async(file) => {
     });
     data.append('pinataOptions', pinataOptions);
 
-    return axios 
+    return axios
         .post(url, data, {
             maxBodyLength: 'Infinity',
             headers: {
@@ -74,18 +76,17 @@ export const uploadFileToIPFS = async(file) => {
             }
         })
         .then(function (response) {
-            console.log("image uploaded", response.data.IpfsHash)
+            console.log("image uploaded", response.data.IpfsHash);
             return {
-               success: true,
-               pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
-           };
+                success: true,
+                pinataURL: "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash
+            };
         })
         .catch(function (error) {
-            console.log(error)
+            console.log(error);
             return {
                 success: false,
                 message: error.message,
-            }
-
-    });
+            };
+        });
 };
